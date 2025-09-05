@@ -1,0 +1,1405 @@
+html, body {
+    background: var(--zw-mono-darkest);
+    color: var(--zw-base-colour);
+    min-height: 100%;
+    font-family: 'Oxanium', monospace;
+}
+
+#app, .app-root, .page, .container {
+    background: transparent;
+}
+
+/* Zero Width Header and Transport */
+.zw-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--zw-mono-darkest);
+    border-bottom: 1px solid var(--zw-base-colour);
+    padding: 1rem;
+}
+
+.zw-header-content {
+    max-width: 1800px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+/* Zero Width Branding */
+.zw-branding {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.zw-title {
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--zw-base-colour);
+    font-family: 'Oxanium', monospace;
+    font-weight: 500;
+    margin: 0;
+}
+
+.zw-subtitle {
+    color: var(--zw-muted-text);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: 'Oxanium', monospace;
+}
+
+/* Zero Width Transport Controls */
+.zw-transport {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* BPM Control */
+.zw-control-bpm {
+    position: relative;
+}
+
+.zw-bpm-input {
+    width: 5rem;
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    padding: 0.25rem 3rem 0.25rem 0.75rem;
+    border-radius: 2px;
+    font-family: 'Oxanium', monospace;
+    font-size: 0.875rem;
+    height: 2rem;
+    transition: all 0.2s;
+    appearance: textfield;
+}
+
+.zw-bpm-input::-webkit-outer-spin-button,
+.zw-bpm-input::-webkit-inner-spin-button {
+    appearance: none;
+}
+
+.zw-bpm-input:hover {
+    border-color: var(--zw-active-colour);
+}
+
+.zw-bpm-input:focus {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+    outline: none;
+}
+
+.zw-bpm-label {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--zw-base-colour);
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+}
+
+/* Time Signature and Session Selects */
+.zw-control-timesig,
+.zw-control-session {
+    position: relative;
+}
+
+.zw-select {
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    padding: 0.25rem 2rem 0.25rem 0.75rem;
+    border-radius: 2px;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    height: 2rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.zw-control-timesig .zw-select {
+    min-width: 4rem;
+}
+
+.zw-control-session .zw-select {
+    min-width: 8rem;
+}
+
+.zw-select:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.zw-select:focus {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+    outline: none;
+}
+
+.zw-select option {
+    background: var(--zw-mono-dark);
+    color: var(--zw-base-colour);
+}
+
+.zw-chevron {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    stroke: currentColor;
+}
+
+/* BPM Pulse Indicator */
+.zw-pulse-container {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.zw-pulse-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    border: 2px solid rgba(24, 185, 194, 0.5);
+    background: transparent;
+    transition: all 0.1s;
+}
+
+.zw-pulse-dot.active {
+    background: var(--zw-base-colour);
+    border-color: var(--zw-base-colour);
+}
+
+.zw-pulse-dot.downbeat {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    box-shadow: 0 0 0.75rem rgba(222, 133, 25, 0.5);
+}
+
+.zw-beat-counter {
+    color: var(--zw-base-colour);
+    font-size: 0.75rem;
+    font-family: 'Oxanium', monospace;
+    width: 1.5rem;
+    text-align: center;
+}
+
+/* Metronome Button */
+.zw-metronome-btn {
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid var(--zw-base-colour);
+    background: transparent;
+    border-radius: 2px;
+    transition: all 0.2s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--zw-base-colour);
+}
+
+.zw-metronome-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.zw-metronome-btn.active {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+/* Metronome volume control */
+.zw-control-metvol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.zw-control-metvol .control-label,
+.zw-control-metvol .control-value {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+/* Transport Buttons */
+.zw-transport-btn {
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 0.75rem;
+}
+
+.zw-transport-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.zw-transport-btn.active {
+    background: var(--zw-red);
+    border-color: var(--zw-red);
+    color: white;
+}
+
+.zw-transport-play {
+    padding: 0 1.5rem;
+}
+
+.zw-transport-btn svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.zw-transport-text {
+    font-size: 0.875rem;
+}
+
+/* Session Info */
+.zw-session-info {
+    text-align: right;
+}
+
+.zw-session-status {
+    color: var(--zw-base-colour);
+    font-size: 0.75rem;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.zw-session-details {
+    color: var(--zw-muted-text);
+    font-size: 0.75rem;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    margin-top: 0.125rem;
+}
+
+/* Adjust main content to account for fixed header */
+.zw-klang-container {
+    padding-top: 5rem;
+}
+
+/* Responsive adjustments for Zero Width header */
+@media (max-width: 1024px) {
+    .zw-header-content {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .zw-transport {
+        gap: 0.5rem;
+    }
+
+    .zw-control-session .zw-select {
+        min-width: 6rem;
+    }
+
+    .zw-transport-play {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .zw-header {
+        padding: 0.75rem;
+    }
+
+    .zw-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .zw-branding {
+        gap: 1rem;
+    }
+
+    .zw-transport {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .zw-session-info {
+        text-align: left;
+    }
+
+    .zw-klang-container {
+        padding-top: 8rem;
+    }
+}
+
+/* Synthesizer Container */
+.zw-klang-container {
+    min-height: 100vh;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 1.5rem 2rem;
+    padding-bottom: 6rem;
+    /* Space for fixed transport bar */
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 1.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    color: var(--zw-base-colour);
+    font-weight: 500;
+}
+
+.subtitle {
+    color: var(--zw-base-colour);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Module Styles */
+.module {
+    background: var(--zw-mono-dark);
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.module-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+}
+
+.module-title {
+    color: var(--zw-base-colour);
+    text-transform: uppercase;
+    /* Inline pitch editor removed in favor of slider-only edits */
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.control-value {
+    color: var(--zw-base-colour);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    text-align: center;
+}
+
+/* Sequencer Controls */
+.sequencer-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .sequencer-controls {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .sequencer-controls {
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+/* Steps Control */
+.steps-control {
+    display: flex;
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 2px;
+    background: var(--zw-mono-dark);
+    height: 2rem;
+}
+
+.steps-btn {
+    padding: 0 0.5rem;
+    color: var(--zw-base-colour);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-family: 'Oxanium', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.steps-btn:hover {
+    color: var(--zw-active-colour);
+}
+
+.steps-display {
+    padding: 0 0.5rem;
+    text-align: center;
+    color: var(--zw-base-colour);
+    border-left: 1px solid rgba(24, 185, 194, 0.3);
+    border-right: 1px solid rgba(24, 185, 194, 0.3);
+    min-width: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oxanium', monospace;
+}
+
+/* Rate Buttons */
+.rate-buttons {
+    display: flex;
+    gap: 0.25rem;
+    height: 2rem;
+}
+
+.rate-btn {
+    flex: 1;
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0 0.5rem;
+}
+
+.rate-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.rate-btn.active {
+    background: var(--zw-selected-colour);
+    border-color: var(--zw-selected-colour);
+    color: white;
+}
+
+/* Swing Input */
+.swing-input {
+    width: 100%;
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    padding: 0.25rem 0.5rem;
+    border-radius: 2px;
+    font-family: 'Oxanium', monospace;
+    font-size: 0.875rem;
+    height: 2rem;
+    transition: all 0.2s;
+}
+
+.swing-input:hover {
+    border-color: var(--zw-active-colour);
+}
+
+.swing-input:focus {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+    outline: none;
+}
+
+/* Select Styles */
+.zw-select {
+    position: relative;
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 2px;
+    height: 2rem;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    background: transparent;
+    color: var(--zw-base-colour);
+    padding: 0.25rem 2rem 0.25rem 0.75rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 120px;
+}
+
+.zw-select:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.zw-select:focus {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+    outline: none;
+}
+
+.zw-select option {
+    background: var(--zw-mono-dark);
+    color: var(--zw-base-colour);
+}
+
+/* Button Styles */
+.zw-button {
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.75rem;
+    height: 2rem;
+}
+
+.zw-button:hover:not(:disabled) {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.zw-button.active {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    color: var(--zw-mono-darkest);
+}
+
+/* Local Sequencer Toggle */
+.seq-toggle[data-playing="true"] {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    color: var(--zw-mono-darkest);
+}
+
+.seq-toggle[data-playing="false"] {
+    background: transparent;
+    border-color: var(--zw-base-colour);
+    color: var(--zw-base-colour);
+}
+
+.seq-toggle[data-playing="false"]:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+/* Waiting pulse for local sequencer when global transport is stopped */
+.seq-toggle.zw-waiting {
+  position: relative;
+}
+.seq-toggle.zw-waiting::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 4px;
+  border: 2px solid var(--zw-active-colour);
+  opacity: 0.5;
+  animation: zwPulse 1s ease-in-out infinite;
+}
+
+@keyframes zwPulse {
+  0% { opacity: 0.2; transform: scale(0.98); }
+  50% { opacity: 0.7; transform: scale(1.02); }
+  100% { opacity: 0.2; transform: scale(0.98); }
+}
+
+
+/* Scoped: active styling for elements inside step cards (use standard active colour) */
+.step-card .active {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    color: var(--zw-mono-darkest);
+}
+
+/* Selected visual first step */
+.klang-sequencer-steps .step-card.is-first .step-number,
+.klang-sequencer-steps .step-number.is-first {
+    background: var(--zw-selected-colour);
+    border: 2px solid var(--zw-selected-colour);
+    color: #fff;
+}
+
+/* Active step highlight — whole card border in zw-active */
+.klang-sequencer-steps .step-card.is-playing {
+    border-color: var(--zw-active-colour);
+    box-shadow: 0 0 0 2px var(--zw-active-colour) inset;
+    /* subtle oomph, optional */
+}
+
+/* No outline on the step number while playing */
+.klang-sequencer-steps .step-card.is-playing .step-number {
+    outline: none;
+}
+
+
+/* Exclude toggles should use the warning colour when active (to stand out)
+   Use attribute selector so only the exclude buttons are affected */
+.zw-button[data-action="excl-trig"].active, .zw-button[data-action="excl-step"].active {
+    background: transparent;
+    border-color: var(--zw-warning-colour);
+    color: var(--zw-warning-colour);
+}
+
+.zw-button.amber {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    color: black;
+}
+
+.zw-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.zw-button.link-btn {
+    width: 100%;
+}
+
+/* Settings Toggle */
+.settings-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--zw-base-colour);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-family: 'Oxanium', monospace;
+    letter-spacing: 0.05em;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    height: 1.5rem;
+}
+
+.settings-toggle:hover {
+    color: var(--zw-active-colour);
+}
+
+.chevron {
+    transition: transform 0.2s;
+    stroke: currentColor;
+}
+
+.chevron.rotated {
+    transform: rotate(180deg);
+}
+
+/* Envelope Controls */
+.envelope-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .envelope-controls {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .envelope-controls {
+        grid-template-columns: repeat(7, 1fr);
+    }
+}
+
+/* Toggle Buttons */
+.toggle-buttons {
+    display: flex;
+    gap: 0.25rem;
+    height: 2rem;
+}
+
+.toggle-btn {
+    flex: 1;
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 0 0.5rem;
+}
+
+.toggle-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.toggle-btn.active {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    color: white;
+}
+
+/* Slider Styles */
+.slider-container {
+    position: relative;
+    height: 2rem;
+    background: var(--zw-mono-dark);
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 2px;
+}
+
+.zw-slider, .blip-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.slider-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--zw-base-colour);
+    border-radius: 1px;
+    transition: width 0.08s linear;
+    z-index: 1;
+    width: var(--slider-fill, 0%);
+}
+
+/* While dragging, slightly brighten base-colour and add subtle shadow */
+.slider-container.dragging::before {
+    filter: brightness(1.2);
+    box-shadow: 0 0 0 1px rgba(24, 185, 194, 0.25) inset;
+}
+
+/* Octave Control */
+.octave-control {
+    display: flex;
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 2px;
+    background: var(--zw-mono-dark);
+    height: 2rem;
+    width: fit-content;
+}
+
+.octave-btn {
+    padding: 0 0.5rem;
+    color: var(--zw-base-colour);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-family: 'Oxanium', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.octave-btn:hover {
+    color: var(--zw-active-colour);
+}
+
+.octave-display {
+    padding: 0 0.5rem;
+    text-align: center;
+    color: var(--zw-base-colour);
+    border-left: 1px solid rgba(24, 185, 194, 0.3);
+    border-right: 1px solid rgba(24, 185, 194, 0.3);
+    min-width: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oxanium', monospace;
+}
+
+/* Settings Panel */
+.settings-panel {
+    border: 1px solid rgba(24, 185, 194, 0.3);
+    border-radius: 10px;
+    padding: 1rem;
+    display: none;
+}
+
+.settings-panel.open {
+    display: block;
+}
+
+.settings-section {
+    margin-bottom: 1.5rem;
+}
+
+.settings-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    color: var(--zw-base-colour);
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+    .settings-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+/* Step Grid */
+.klang-sequencer-steps {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .klang-sequencer-steps {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .klang-sequencer-steps {
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+/* Step Card */
+.step-card {
+    position: relative;
+    padding: 1rem;
+    background: var(--zw-mono-dark);
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.step-card.active {
+    border-color: var(--zw-active-colour);
+}
+
+.step-card.linked-from-prev {
+    border-left: 4px solid var(--zw-active-colour);
+}
+
+.step-number {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oxanium', monospace;
+    font-size: 0.75rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--zw-base-colour);
+}
+
+.step-number.current {
+    background: var(--zw-selected-colour);
+    border: 2px solid var(--zw-selected-colour);
+    color: white;
+}
+
+.step-number.pending {
+    background: var(--zw-active-colour);
+    border: 2px solid var(--zw-active-colour);
+    color: black;
+}
+
+.step-number:hover:not(.current):not(.pending) {
+    border: 2px solid var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.step-content {
+    margin-top: 1.5rem;
+}
+
+.step-on-btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    height: 2rem;
+}
+
+.step-note-btn {
+    width: 100%;
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Oxanium', monospace;
+    font-weight: bold;
+    font-size: 0.875rem;
+    height: 2rem;
+    margin-bottom: 1rem;
+}
+
+.step-note-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+/* Active state for the pitch note button when the step is playing or focused */
+.step-card.active .step-note-btn,
+.step-note-btn:focus-visible {
+    outline: none;
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+/* Inline pitch editor */
+.note-edit-input, .note-display {
+    width: 100%;
+    height: 2rem;
+    background: transparent;
+    border: 2px solid var(--zw-active-colour);
+    color: var(--zw-active-colour);
+    border-radius: 2px;
+    font-family: 'Oxanium', monospace;
+    font-weight: bold;
+    font-size: 0.875rem;
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.note-edit-input:focus {
+    outline: none;
+    border-color: var(--zw-selected-colour);
+    color: var(--zw-selected-colour);
+}
+
+.note-edit-input.invalid {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+/* Improve slider hover affordance */
+.slider-container:hover {
+    border-color: var(--zw-active-colour);
+}
+
+.step-param {
+    margin-bottom: 0.75rem;
+}
+
+.step-param-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.step-param-label {
+    color: var(--zw-base-colour);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-family: 'Oxanium', monospace;
+}
+
+.step-param-value {
+    color: var(--zw-active-colour);
+    font-size: 0.75rem;
+    font-family: 'Oxanium', monospace;
+}
+
+/* Icon Buttons */
+.icon-buttons {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.icon-btn {
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid var(--zw-base-colour);
+    background: transparent;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--zw-base-colour);
+}
+
+.icon-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.icon-btn.active {
+    background: var(--zw-selected-colour);
+    border-color: var(--zw-selected-colour);
+    color: white;
+}
+
+/* Switch Styles */
+.switch-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.switch-label {
+    color: var(--zw-base-colour);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-family: 'Oxanium', monospace;
+}
+
+.switch {
+    width: 2rem;
+    height: 1rem;
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 1rem;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.switch.active {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+}
+
+.switch-thumb {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--zw-base-colour);
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.2s;
+}
+
+.switch.active .switch-thumb {
+    right: 0;
+    left: auto;
+    background: black;
+}
+
+/* Link Connection */
+.link-connection {
+    position: absolute;
+    right: -0.5rem;
+    bottom: 1rem;
+    z-index: 10;
+}
+
+.link-line {
+    width: 1.5rem;
+    height: 0.125rem;
+    background: var(--zw-active-colour);
+}
+
+
+/* Child's LINKED button: disabled, base colour */
+.step-card .step-on-btn[disabled] {
+    border-color: var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    background: transparent;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* Transpose Row */
+.klang-transpose-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.transpose-btn {
+    width: 3rem;
+    height: 3rem;
+    border: 2px solid var(--zw-base-colour);
+    background: transparent;
+    color: var(--zw-base-colour);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Oxanium', monospace;
+    font-size: 0.875rem;
+}
+
+.transpose-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.transpose-btn.active {
+    background: var(--zw-selected-colour);
+    border-color: var(--zw-selected-colour);
+    color: white;
+}
+
+.transpose-btn.pending {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    color: black;
+}
+
+/* Transport Bar */
+.transport-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--zw-mono-dark);
+    border-top: 2px solid var(--zw-base-colour);
+    padding: 1rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+}
+
+.transport-bar>div {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2rem;
+}
+
+.transport-left,
+.transport-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 2rem;
+}
+
+.transport-btn {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--zw-base-colour);
+    background: transparent;
+    color: var(--zw-base-colour);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.transport-btn:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.transport-btn.playing {
+    background: var(--zw-active-colour);
+    border-color: var(--zw-active-colour);
+    color: black;
+}
+
+/* Synth section: use selected (magenta) colour for active buttons, not the standard active colour */
+.klang-synthesiser-module .zw-button.active,
+.klang-synthesiser-module .toggle-btn.active,
+.klang-synthesiser-module .toggle-buttons .toggle-btn.active {
+    background: var(--zw-selected-colour);
+    border-color: var(--zw-selected-colour);
+    color: white;
+}
+
+
+
+.bpm-container {
+    position: relative;
+}
+
+.bpm-input {
+    width: 6rem;
+    height: 2rem;
+    background: transparent;
+    border: 2px solid var(--zw-base-colour);
+    color: var(--zw-base-colour);
+    padding: 0.25rem 3rem 0.25rem 0.5rem;
+    border-radius: 2px;
+}
+
+.bpm-label {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--zw-base-colour);
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+}
+
+.session-select {
+    border: 2px solid var(--zw-base-colour);
+    border-radius: 2px;
+    height: 2rem;
+    background: transparent;
+    color: var(--zw-base-colour);
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.75rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.session-select:hover {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+}
+
+.session-select:focus {
+    border-color: var(--zw-active-colour);
+    color: var(--zw-active-colour);
+    outline: none;
+}
+
+.session-select option {
+    background: var(--zw-mono-dark);
+    color: var(--zw-base-colour);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .synthesizer-container {
+        padding: 1rem;
+        padding-bottom: 6rem;
+    }
+
+    .sequencer-controls {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .envelope-controls {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .settings-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .step-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .transpose-row {
+        gap: 0.25rem;
+    }
+
+    .transpose-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 0.75rem;
+    }
+
+    .transport-bar {
+        padding: 0.5rem;
+    }
+
+    .transport-left,
+    .transport-right {
+        gap: 0.5rem;
+    }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.bpm-label {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--zw-base-colour);
+    font-family: 'Oxanium', monospace;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+}

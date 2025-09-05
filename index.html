@@ -1,0 +1,614 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERO WIDTH - 8-BIT STEP SEQUENCER</title>
+    <link rel="stylesheet" href="zw-global.css">
+    <link rel="stylesheet" href="zw-styles.css">
+</head>
+
+<body>
+    <main>
+        <header class="zw-header" id="zwHeader">
+            <div class="zw-header-content">
+                <!-- Zero Width Branding -->
+                <div class="zw-branding">
+                    <h1 class="zw-title">ZERO WIDTH</h1>
+                    <div class="zw-subtitle">AUDIO PRODUCTION SUITE</div>
+                </div>
+
+                <!-- Global Transport Controls -->
+                <div class="zw-transport">
+                    <!-- BPM with text inside input -->
+                    <div class="zw-control-bpm">
+                        <input type="number" class="zw-bpm-input" id="bpmInput" value="120" min="60" max="200">
+                        <span class="zw-bpm-label">BPM</span>
+                    </div>
+
+                    <!-- Time Signature -->
+                    <div class="zw-control-timesig">
+                        <select class="zw-select" id="timeSignatureSelect">
+                            <option value="4/4">4/4</option>
+                            <option value="3/4">3/4</option>
+                            <option value="2/4">2/4</option>
+                            <option value="6/8">6/8</option>
+                            <option value="5/4">5/4</option>
+                            <option value="7/8">7/8</option>
+                            <option value="9/8">9/8</option>
+                            <option value="11/8">11/8</option>
+                            <option value="13/8">13/8</option>
+                            <option value="15/16">15/16</option>
+                        </select>
+                        <svg class="zw-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </div>
+
+                    <!-- BPM Pulse -->
+                    <div class="zw-pulse-container">
+                        <div class="zw-pulse-dot" id="pulseIndicator"></div>
+                        <div class="zw-beat-counter" id="beatCounter">-</div>
+                    </div>
+
+                    <!-- Metronome Toggle -->
+                    <button class="zw-metronome-btn" id="metronomeBtn" title="Metronome toggle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2L6 22h12L12 2z"></path>
+                            <path d="M12 2l6 8-6-2-6 2 6-8z"></path>
+                            <circle cx="12" cy="8" r="1"></circle>
+                        </svg>
+                    </button>
+
+                    <!-- Metronome Volume -->
+                    <div class="zw-control-metvol">
+                        <div class="control-label">Met vol</div>
+                        <div class="slider-container" style="--slider-fill: 60%; width: 6rem;">
+                            <input type="range" class="zw-slider" id="metVolSlider" min="0" max="150" value="60"
+                                style="--_p: 60%;">
+                        </div>
+                        <div class="control-value" id="metVolValue">60%</div>
+                    </div>
+
+
+                    <!-- Transport Buttons -->
+                    <button class="zw-transport-btn zw-transport-play" id="playStopBtn">
+                        <svg class="zw-play-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polygon points="5,3 19,12 5,21"></polygon>
+                        </svg>
+                        <svg class="zw-stop-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" style="display: none;">
+                            <rect x="6" y="6" width="12" height="12"></rect>
+                        </svg>
+                        <span class="zw-transport-text">PLAY</span>
+                    </button>
+
+                    <button class="zw-transport-btn" id="saveBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z">
+                            </path>
+                            <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path>
+                            <path d="M7 3v4a1 1 0 0 0 1 1h4"></path>
+                        </svg>
+                    </button>
+
+                    <button class="zw-transport-btn" id="loadBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                            <path d="m9 15 3-3 3 3"></path>
+                            <path d="m12 12 0 9"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Session Selector -->
+                    <div class="zw-control-session">
+                        <select class="zw-select" id="sessionSelect">
+                            <option value="session_001.zw">session_001.zw</option>
+                            <option value="session_002.zw">session_002.zw</option>
+                            <option value="session_003.zw">session_003.zw</option>
+                            <option value="session_004.zw">session_004.zw</option>
+                            <option value="session_005.zw">session_005.zw</option>
+                            <option value="session_006.zw">session_006.zw</option>
+                            <option value="session_007.zw">session_007.zw</option>
+                            <option value="session_008.zw">session_008.zw</option>
+                            <option value="session_009.zw">session_009.zw</option>
+                            <option value="session_010.zw">session_010.zw</option>
+                        </select>
+                        <svg class="zw-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Session Info -->
+                <div class="zw-session-info">
+                    <div class="zw-session-status" id="sessionStatus">STOPPED</div>
+                    <div class="zw-session-details" id="sessionDetails">4/4 • 120 BPM</div>
+                </div>
+            </div>
+        </header>
+        <article class="zw-klang-container">
+
+            <!-- Synthesis Module, Sequencer Module, Step controls, Transpose controls  -->
+
+            <!-- Synthesis Module -->
+            <section class="module klang-synthesiser-module">
+                <header class="module-header">
+                    <h2 class="module-title">Synthesiser</h2>
+                    <button class="settings-toggle" id="settingsToggle">
+                        <span>Settings</span>
+                        <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </button>
+                </header>
+                <!-- Envelope Controls -->
+                <div class="envelope-controls">
+                    <!-- Route -->
+                    <div class="control-group">
+                        <div class="control-label">Route</div>
+                        <div class="toggle-buttons">
+                            <button class="toggle-btn active" data-route="AMP">Amp</button>
+                            <button class="toggle-btn" data-route="FILTER">Filter</button>
+                        </div>
+                    </div>
+                    <!-- Attack -->
+                    <div class="control-group">
+                        <div class="control-label">Attack</div>
+                        <div class="slider-container" style="--slider-fill: 5%;">
+                            <input type="range" class="zw-slider" id="attackSlider" min="0" max="100" value="5"
+                                style="--_p: 5%;">
+                        </div>
+                        <div class="control-value" id="attackValue">5</div>
+                    </div>
+                    <!-- Decay -->
+                    <div class="control-group">
+                        <div class="control-label">Decay</div>
+                        <div class="slider-container" style="--slider-fill: 20%;">
+                            <input type="range" class="zw-slider" id="decaySlider" min="0" max="100" value="20"
+                                style="--_p: 20%;">
+                        </div>
+                        <div class="control-value" id="decayValue">20</div>
+                    </div>
+                    <!-- Sustain -->
+                    <div class="control-group">
+                        <div class="control-label">Sustain</div>
+                        <div class="slider-container" style="--slider-fill: 70%;">
+                            <input type="range" class="zw-slider" id="sustainSlider" min="0" max="100" value="70"
+                                style="--_p: 70%;">
+                        </div>
+                        <div class="control-value" id="sustainValue">70</div>
+                    </div>
+                    <!-- Release -->
+                    <div class="control-group">
+                        <div class="control-label">Release</div>
+                        <div class="slider-container" style="--slider-fill: 40%;">
+                            <input type="range" class="zw-slider" id="releaseSlider" min="0" max="100" value="40"
+                                style="--_p: 40%;">
+                        </div>
+                        <div class="control-value" id="releaseValue">40</div>
+                    </div>
+                    <!-- Glide -->
+                    <div class="control-group">
+                        <div class="control-label">Glide</div>
+                        <div class="slider-container" style="--slider-fill: 30%;">
+                            <input type="range" class="zw-slider" id="glideSlider" min="0" max="100" value="30"
+                                style="--_p: 30%;">
+                        </div>
+                        <div class="control-value" id="glideValue">30</div>
+                    </div>
+                    <!-- Octave -->
+                    <div class="control-group">
+                        <div class="control-label">Octave</div>
+                        <div class="octave-control">
+                            <button class="octave-btn" id="octaveDown">-</button>
+                            <div class="octave-display" id="octaveDisplay">+0</div>
+                            <button class="octave-btn" id="octaveUp">+</button>
+                        </div>
+                        <div class="control-value" id="octaveValue">Oct +0</div>
+                    </div>
+                    <!-- Synth Volume -->
+                    <div class="control-group">
+                        <div class="control-label">Volume</div>
+                        <div class="slider-container" style="--slider-fill: 100%;">
+                            <input type="range" class="zw-slider" id="synthVolSlider" min="0" max="100" value="100"
+                                style="--_p: 100%;">
+                        </div>
+                        <div class="control-value" id="synthVolValue">100%</div>
+                    </div>
+
+                </div>
+                <!-- Settings Panel -->
+                <section class="settings-panel" id="settingsPanel">
+                    <!-- Oscillator Section -->
+                    <section class="settings-section">
+                        <h3 class="section-title">Oscillator</h3>
+                        <div class="settings-grid">
+                            <div class="control-group">
+                                <div class="control-label">Wave</div>
+                                <select class="zw-select" id="waveSelect">
+                                    <option value="SQUARE">Square</option>
+                                    <option value="PULSE">Pulse</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Pwm</div>
+                                <div class="slider-container" style="--slider-fill: 50%;">
+                                    <input type="range" class="zw-slider" id="pwmSlider" min="0" max="100" value="50"
+                                        style="--_p: 50%;">
+                                </div>
+                                <div class="control-value" id="pwmValue">50</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Combed noise</div>
+                                <div class="slider-container" style="--slider-fill: 0%;">
+                                    <input type="range" class="zw-slider" id="combedNoiseSlider" min="0" max="100"
+                                        value="0" style="--_p: 0%;">
+                                </div>
+                                <div class="control-value" id="combedNoiseValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Shape</div>
+                                <div class="slider-container" style="--slider-fill: 50%;">
+                                    <input type="range" class="zw-slider" id="shapeSlider" min="0" max="100" value="50"
+                                        style="--_p: 50%;">
+                                </div>
+                                <div class="control-value" id="shapeValue">50</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Pitch mod src</div>
+                                <div class="toggle-buttons">
+                                    <button class="toggle-btn active" data-pitchmod="LFO">Lfo</button>
+                                    <button class="toggle-btn" data-pitchmod="ENV">Env</button>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Pitch mod depth</div>
+                                <div class="slider-container" style="--slider-fill: 25%;">
+                                    <input type="range" class="zw-slider" id="pitchDepthSlider" min="0" max="100"
+                                        value="25" style="--_p: 25%;">
+                                </div>
+                                <div class="control-value" id="pitchDepthValue">25</div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Bit Engine Section -->
+                    <section class="settings-section">
+                        <h3 class="section-title">Bit engine</h3>
+                        <div class="settings-grid">
+                            <div class="control-group">
+                                <div class="control-label">Model</div>
+                                <select class="zw-select" id="bitModelSelect">
+                                    <option value="REDUX">Redux</option>
+                                    <option value="FOLD">Fold</option>
+                                    <option value="DOWNSAMPLE">Downsample</option>
+                                    <option value="JITTER">Jitter</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Resolution</div>
+                                <div class="slider-container" style="--slider-fill: 75%;">
+                                    <input type="range" class="zw-slider" id="resolutionSlider" min="0" max="100"
+                                        value="75" style="--_p: 75%;">
+                                </div>
+                                <div class="control-value" id="resolutionValue">75</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Level</div>
+                                <div class="slider-container" style="--slider-fill: 50%;">
+                                    <input type="range" class="zw-slider" id="levelSlider" min="0" max="100" value="50"
+                                        style="--_p: 50%;">
+                                </div>
+                                <div class="control-value" id="levelValue">50</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Pitch mod</div>
+                                <div class="slider-container" style="--slider-fill: 0%;">
+                                    <input type="range" class="zw-slider" id="bitPitchSlider" min="0" max="100"
+                                        value="0" style="--_p: 0%;">
+                                </div>
+                                <div class="control-value" id="bitPitchValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Velocity mod</div>
+                                <div class="slider-container" style="--slider-fill: 25%;">
+                                    <input type="range" class="zw-slider" id="velModSlider" min="0" max="100" value="25"
+                                        style="--_p: 25%;">
+                                </div>
+                                <div class="control-value" id="velModValue">25</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Onset</div>
+                                <div class="slider-container" style="--slider-fill: 30%;">
+                                    <input type="range" class="zw-slider" id="onsetSlider" min="0" max="100" value="30"
+                                        style="--_p: 30%;">
+                                </div>
+                                <div class="control-value" id="onsetValue">30</div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Filter Section -->
+                    <section class="settings-section">
+                        <h3 class="section-title">Filter</h3>
+                        <div class="settings-grid">
+                            <div class="control-group">
+                                <div class="control-label">Cutoff</div>
+                                <div class="slider-container" style="--slider-fill: 80%;">
+                                    <input type="range" class="zw-slider" id="cutoffSlider" min="0" max="100" value="80"
+                                        style="--_p: 80%;">
+                                </div>
+                                <div class="control-value" id="cutoffValue">16020Hz</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Resonance</div>
+                                <div class="slider-container" style="--slider-fill: 25%;">
+                                    <input type="range" class="zw-slider" id="resonanceSlider" min="0" max="100"
+                                        value="25" style="--_p: 25%;">
+                                </div>
+                                <div class="control-value" id="resonanceValue">25</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Pitch mod</div>
+                                <div class="slider-container" style="--slider-fill: 0%;">
+                                    <input type="range" class="zw-slider" id="filterPitchSlider" min="0" max="100"
+                                        value="0" style="--_p: 0%;">
+                                </div>
+                                <div class="control-value" id="filterPitchValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Velocity mod</div>
+                                <div class="slider-container" style="--slider-fill: 15%;">
+                                    <input type="range" class="zw-slider" id="filterVelSlider" min="0" max="100"
+                                        value="15" style="--_p: 15%;">
+                                </div>
+                                <div class="control-value" id="filterVelValue">15</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Lfo mod</div>
+                                <div class="slider-container" style="--slider-fill: 10%;">
+                                    <input type="range" class="zw-slider" id="lfoModSlider" min="0" max="100" value="10"
+                                        style="--_p: 10%;">
+                                </div>
+                                <div class="control-value" id="lfoModValue">10</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Env mod</div>
+                                <div class="slider-container" style="--slider-fill: 40%;">
+                                    <input type="range" class="zw-slider" id="envModSlider" min="0" max="100" value="40"
+                                        style="--_p: 40%;">
+                                </div>
+                                <div class="control-value" id="envModValue">40</div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- LFO Section -->
+                    <section class="settings-section">
+                        <h3 class="section-title">Lfo</h3>
+                        <div class="settings-grid">
+                            <div class="control-group">
+                                <div class="control-label">Shape</div>
+                                <select class="zw-select" id="lfoShapeSelect">
+                                    <option value="SAW">Saw</option>
+                                    <option value="SQUARE">Square</option>
+                                    <option value="SINE" selected="">Sine</option>
+                                    <option value="S&amp;H">S&amp;h</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Rate</div>
+                                <select class="zw-select" id="lfoRateSelect">
+                                    <option value="1/1">1/1</option>
+                                    <option value="1/2">1/2</option>
+                                    <option value="1/4" selected="">1/4</option>
+                                    <option value="1/8">1/8</option>
+                                    <option value="1/16">1/16</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Swing</div>
+                                <div class="slider-container" style="--slider-fill: 0%;">
+                                    <input type="range" class="zw-slider" id="lfoSwingSlider" min="0" max="100"
+                                        value="0" style="--_p: 0%;">
+                                </div>
+                                <div class="control-value" id="lfoSwingValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Depth</div>
+                                <div class="slider-container" style="--slider-fill: 25%;">
+                                    <input type="range" class="blip-slider" id="lfoDepthSlider" min="0" max="100"
+                                        value="25" style="--_p: 25%;">
+                                </div>
+                                <div class="control-value" id="lfoDepthValue">25</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Delay</div>
+                                <div class="slider-container" style="--slider-fill: 0%;">
+                                    <input type="range" class="blip-slider" id="lfoDelaySlider" min="0" max="100"
+                                        value="0" style="--_p: 0%;">
+                                </div>
+                                <div class="control-value" id="lfoDelayValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">Phase offset</div>
+                                <div class="slider-container" style="--slider-fill: 0%;">
+                                    <input type="range" class="blip-slider" id="lfoPhaseSlider" min="0" max="100"
+                                        value="0" style="--_p: 0%;">
+                                </div>
+                                <div class="control-value" id="lfoPhaseValue">0</div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </section>
+            <!-- Sequencer Module -->
+            <section class="module klang-sequencer-module">
+                <header class="module-header">
+                    <h2 class="module-title">Sequencer</h2>
+                    <!-- Local Start/Stop Button -->
+                    <button id="sequencerPlayBtn" class="zw-button seq-toggle" aria-pressed="true" data-playing="true">
+                        Stop
+                    </button>
+                </header>
+                <div class="sequencer-controls">
+                    <!-- Steps Control -->
+                    <div class="control-group">
+                        <div class="control-label">Steps</div>
+                        <div class="steps-control">
+                            <button class="steps-btn" id="stepsDown">-</button>
+                            <div class="steps-display" id="stepsDisplay">8</div>
+                            <button class="steps-btn" id="stepsUp">+</button>
+                        </div>
+                    </div>
+                    <!-- Rate Control -->
+                    <div class="control-group">
+                        <div class="control-label">Rate</div>
+                        <div class="rate-buttons">
+                            <button class="rate-btn" data-rate="1/2">1/2</button>
+                            <button class="rate-btn active" data-rate="1/4">1/4</button>
+                            <button class="rate-btn" data-rate="1/8">1/8</button>
+                            <button class="rate-btn" data-rate="1/16">1/16</button>
+                        </div>
+                    </div>
+                    <!-- Swing Control -->
+                    <div class="control-group">
+                        <div class="control-label">Swing</div>
+                        <div class="slider-container" style="--slider-fill: 0%;">
+                            <input type="range" class="zw-slider" id="swingInput" min="0" max="100" value="0"
+                                style="--_p: 0%;">
+                        </div>
+                        <div class="control-value" id="swingValue">0</div>
+                    </div>
+                    <!-- Playback Control -->
+                    <div class="control-group">
+                        <div class="control-label">Playback</div>
+                        <select class="zw-select" id="playbackSelect">
+                            <option value="FORWARDS">FORWARDS</option>
+                            <option value="BACKWARDS">BACKWARDS</option>
+                            <option value="PINGPONG">PINGPONG</option>
+                            <option value="RANDOM">RANDOM</option>
+                        </select>
+                    </div>
+                    <!-- Start Offset Control -->
+                    <div class="control-group">
+                        <div class="control-label">Start offset</div>
+                        <select class="zw-select" id="startOffsetSelect">
+                            <option value="OFF">OFF</option>
+                            <option value="1/8">1/8</option>
+                            <option value="1/4">1/4</option>
+                            <option value="3/8">3/8</option>
+                            <option value="1/2">1/2</option>
+                        </select>
+                    </div>
+                    <!-- Trigger Control -->
+                    <div class="control-group">
+                        <div class="control-label">Trigger</div>
+                        <select class="zw-select" id="triggerSelect">
+                            <option value="OFF">OFF</option>
+                            <option value="1/2">1/2</option>
+                            <option value="1/3">1/3</option>
+                            <option value="1/4">1/4</option>
+                            <option value="1/8" disabled="">1/8</option>
+                        </select>
+                    </div>
+                    <!-- Shape Control -->
+                    <div class="control-group">
+                        <div class="control-label">Shape</div>
+                        <select class="zw-select" id="shapeSelect">
+                            <option value="STEADY">STEADY</option>
+                            <option value="FADE">FADE</option>
+                            <option value="DIP">DIP</option>
+                            <option value="RISE">RISE</option>
+                        </select>
+                    </div>
+                    <!-- Reorder Control -->
+                    <div class="control-group">
+                        <div class="control-label">Reorder</div>
+                        <button class="zw-button" id="reorderBtn" disabled="">Commit</button>
+                    </div>
+                </div>
+            </section>
+            <!-- Step Grid -->
+            <section class="klang-sequencer-steps" id="sequencerSteps">
+                <!-- Step cards will be rendered here by JS -->
+                <!-- Example of a step card-->
+                <!-- <div class="step-card is-first" data-step-idx="0">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <button class="zw-button step-on-btn active" data-step="1" data-action="toggle-on">ON</button>
+            <div class="note-display" tabindex="0" data-step="1">C3</div>
+            <div class="step-param">
+              <div class="step-param-header">
+                <span class="step-param-label">PITCH</span>
+                <span class="step-param-value">C3</span>
+              </div>
+              <div class="slider-container" style="--slider-fill: 33%;">
+                <input type="range" class="zw-slider" min="0" max="100" value="33" data-step="1" data-param="pitch">
+              </div>
+            </div>
+            <div class="step-param">
+              <div class="step-param-label">GATE</div>
+              <div class="icon-buttons">
+                <button class="icon-btn" data-step="1" data-action="gate" data-value="SHORT" title="Short gate">♩</button>
+                <button class="icon-btn active zw-red" data-step="1" data-action="gate" data-value="MEDIUM" title="Medium gate">𝅗𝅥</button>
+                <button class="icon-btn" data-step="1" data-action="gate" data-value="LONG" title="Long gate">𝅝</button>
+              </div>
+            </div>
+            <div class="step-param">
+              <div class="step-param-label">VEL</div>
+              <div class="icon-buttons">
+                <button class="icon-btn" data-step="1" data-action="velocity" data-value="LOW" title="Low velocity">I</button>
+                <button class="icon-btn active zw-red" data-step="1" data-action="velocity" data-value="MEDIUM" title="Medium velocity">II</button>
+                <button class="icon-btn" data-step="1" data-action="velocity" data-value="HIGH" title="High velocity">III</button>
+              </div>
+            </div>
+            <div class="step-param">
+              <div class="step-param-label">PROB</div>
+              <div class="icon-buttons">
+                <button class="icon-btn" data-step="1" data-action="probability" data-value="33" title="33% probability">|</button>
+                <button class="icon-btn" data-step="1" data-action="probability" data-value="66" title="66% probability">||</button>
+                <button class="icon-btn zw-red" data-step="1" data-action="probability" data-value="99" title="99% probability">|||</button>
+              </div>
+            </div>
+            <div class="switch-control">
+              <span class="switch-label">EXCL TRIG</span>
+              <button class="zw-button " data-step="1" data-action="excl-trig">OFF</button>
+            </div>
+            <div class="switch-control">
+              <span class="switch-label">EXCL STEP</span>
+              <button class="zw-button " data-step="1" data-action="excl-step">OFF</button>
+            </div>
+            <button class="zw-button link-btn" data-step="1" data-action="link">LINK</button>
+          </div>
+        </div> -->
+            </section>
+            <!-- Transpose Row -->
+            <nav class="klang-transpose-row">
+                <button class="transpose-btn" data-transpose="-6">-6</button>
+                <button class="transpose-btn" data-transpose="-5">-5</button>
+                <button class="transpose-btn" data-transpose="-4">-4</button>
+                <button class="transpose-btn" data-transpose="-3">-3</button>
+                <button class="transpose-btn" data-transpose="-2">-2</button>
+                <button class="transpose-btn" data-transpose="-1">-1</button>
+                <button class="transpose-btn active" data-transpose="0">+0</button>
+                <button class="transpose-btn" data-transpose="1">+1</button>
+                <button class="transpose-btn" data-transpose="2">+2</button>
+                <button class="transpose-btn" data-transpose="3">+3</button>
+                <button class="transpose-btn" data-transpose="4">+4</button>
+                <button class="transpose-btn" data-transpose="5">+5</button>
+                <button class="transpose-btn" data-transpose="6">+6</button>
+            </nav>
+        </article>
+    </main>
+    <script src="zw-engine.js"></script>
+    <script src="zw-ui-bridge.js"></script>
+</body>
+
+</html>
