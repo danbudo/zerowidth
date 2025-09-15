@@ -1,8 +1,12 @@
 /* ZERO WIDTH – UI Bridge - SAFE MINIMAL VERSION
    No $ conflicts, get sequencer working first
+   VERSION: 2024-09-15-FULL-CONTROLS
 */
 
 (function(){
+  // Version identifier for debugging
+  window.zwBridgeVersion = '2024-09-15-FULL-CONTROLS';
+  console.log('Loading ZW UI Bridge version:', window.zwBridgeVersion);
   // Basic DOM elements - using standard querySelector
   const stepsRoot = document.querySelector('#sequencerSteps');
   const stepsDisplay = document.querySelector('#stepsDisplay');
