@@ -93,7 +93,6 @@
 
   // MASTER transport UI (affects Zero Width global)
   function setMasterTransportUI(state){
-    masterIsPlaying = (state === 'PLAYING');
     if (!playStopBtn) return;
     if (state==='PLAYING'){
       playStopBtn.classList.add('active');
@@ -108,14 +107,20 @@
     }
   }
 
-  // LOCAL sequencer UI (Klang only - does not affect master)
+  // LOCAL sequencer UI with AUTOPLAY button
   function setLocalBtnUI(){
     if (!seqLocalBtn) return;
-    if (engine.isPlaying){
+    
+    // Update main sequencer button
+    if (engine.isPlaying && masterIsPlaying){
       seqLocalBtn.classList.add('active');
       seqLocalBtn.textContent = 'STOP';
       seqLocalBtn.dataset.state = 'playing';
-    } else if (seqArmed){
+    } else if (seqArmed && masterIsPlaying){
+      seqLocalBtn.classList.add('active');
+      seqLocalBtn.textContent = 'ARMED';
+      seqLocalBtn.dataset.state = 'armed';
+    } else if (seqArmed && !masterIsPlaying) {
       seqLocalBtn.classList.add('active');
       seqLocalBtn.textContent = 'ARMED';
       seqLocalBtn.dataset.state = 'armed';
@@ -123,6 +128,24 @@
       seqLocalBtn.classList.remove('active');
       seqLocalBtn.textContent = 'START';
       seqLocalBtn.dataset.state = 'idle';
+    }
+
+    // Update autoplay button
+    const autoplayBtn = $('#seqAutoplayBtn');
+    if (autoplayBtn) {
+      autoplayBtn.classList.toggle('active', seqAutoplay);
+      autoplayBtn.textContent = seqAutoplay ? 'AUTO' : 'MANUAL';
+    }
+  }
+
+  // Add autoplay button functionality
+  function setupAutoplayButton() {
+    const autoplayBtn = $('#seqAutoplayBtn');
+    if (autoplayBtn) {
+      autoplayBtn.addEventListener('click', ()=>{
+        seqAutoplay = !seqAutoplay;
+        setLocalBtnUI();
+      });
     }
   }
 
@@ -165,10 +188,11 @@
   // ---------- Engine <-> UI ----------
   engine.setCallbacks({
     onStatus:(s)=>{
-      // CRITICAL FIX: Do not update master transport from local engine status
-      sessionStatus.textContent = masterIsPlaying ? 'PLAYING' : 'STOPPED';
+      // FIXED: Restore proper master transport UI updates
+      sessionStatus.textContent=s;
+      setMasterTransportUI(s);
       
-      // Only update local sequencer UI
+      // Only update local sequencer state for arming logic
       if (s === 'PLAYING'){
         if (seqArmed){
           const idx = (desiredStartIdx!=null) ? desiredStartIdx : 0;
@@ -406,19 +430,66 @@
   }
   function markFirstSelected(idx){ $$('.step-number').forEach((el,i)=>el.classList.toggle('is-first', i===idx)); }
 
-  // ---------- FIXED Master Transport (Zero Width Global) ----------
+  // ---------- FIXED Transport Logic ----------
+  let masterIsPlaying = false; // Track Zero Width master independently
+  let seqArmed = false;
+  let seqAutoplay = true; // New: Autoplay toggle
+  let desiredStartIdx = null;
+
+  // MASTER transport (Zero Width - controls metronome)
   function toggleMasterTransport(){ 
-    // This should control the GLOBAL Zero Width transport
-    // For now, just track state - you'll need to integrate with actual global transport
     masterIsPlaying = !masterIsPlaying;
-    setMasterTransportUI(masterIsPlaying ? 'PLAYING' : 'STOPPED');
     
-    // If master stops, local sequencer should also stop
-    if (!masterIsPlaying && engine.isPlaying) {
-      engine.stop();
-      seqArmed = false;
-      desiredStartIdx = null;
+    if (masterIsPlaying) {
+      // Start Zero Width master
+      engine.play();
+      // If autoplay is on and Klang is armed, start Klang too
+      if (seqAutoplay || seqArmed) {
+        seqArmed = false; // Clear armed state when starting
+      }
+    } else {
+      // Stop Zero Width master
+      engine.stop(); 
+      seqArmed = false; // Clear armed state when master stops
     }
+    
+    setMasterTransportUI(masterIsPlaying ? 'PLAYING' : 'STOPPED');
+    setLocalBtnUI();
+  }
+
+  // LOCAL sequencer (Klang only - does not affect master transport)
+  function toggleLocalSequencer() {
+    if (engine.isPlaying) {
+      // If Klang is playing, stop it but keep master running
+      if (masterIsPlaying) {
+        // Master is still running, so arm Klang for next cycle
+        seqArmed = true;
+        // Don't actually stop the engine, just mark as armed
+      } else {
+        // Master is not running, so we can stop everything
+        engine.stop();
+        masterIsPlaying = false;
+        setMasterTransportUI('STOPPED');
+      }
+    } else {
+      // Klang is not playing
+      if (masterIsPlaying) {
+        // Master is running, start Klang immediately
+        seqArmed = false;
+        if (desiredStartIdx !== null) {
+          engine.stepIndex = desiredStartIdx;
+          desiredStartIdx = null;
+        }
+      } else {
+        // Master is not running, just toggle armed state
+        seqArmed = !seqArmed;
+        if (seqArmed && desiredStartIdx === null) {
+          desiredStartIdx = 0;
+        }
+        pulseOnce();
+      }
+    }
+    setLocalBtnUI();
   }
   playStopBtn && playStopBtn.addEventListener('click', toggleMasterTransport);
 
@@ -429,42 +500,25 @@
     if(e.code==='Space' && !typing){ e.preventDefault(); toggleMasterTransport(); }
   });
 
-  // ---------- FIXED Local Sequencer Transport (Klang Only) ----------
+  // ---------- FIXED Local Sequencer Transport ----------
   if (seqLocalBtn){
-    seqLocalBtn.addEventListener('click', ()=>{
-      if (engine.isPlaying){
-        // CRITICAL FIX: Only stop Klang engine, not master transport
-        engine.stop();
-        seqArmed = false;
-        desiredStartIdx = null;
-      } else {
-        seqArmed = !seqArmed;
-        if (seqArmed){
-          if (desiredStartIdx==null) desiredStartIdx = 0;
-          pulseOnce();
-          // If master is playing, start immediately
-          if (masterIsPlaying) {
-            engine.play();
-            seqArmed = false;
-          }
-        }
-      }
-      setLocalBtnUI();
-    });
+    seqLocalBtn.addEventListener('click', toggleLocalSequencer);
   }
+  
+  // Setup autoplay button
+  setupAutoplayButton();
 
   // ---------- BPM, TimeSig, Metronome ----------
   bpmInput && bpmInput.addEventListener('change',()=>engine.setBpm(bpmInput.value));
   timeSignatureSelect && timeSignatureSelect.addEventListener('change',()=>engine.setTimeSignature(timeSignatureSelect.value));
   metronomeBtn && metronomeBtn.addEventListener('click',()=>{ const a=metronomeBtn.classList.toggle('active'); engine.setMetronomeEnabled(a); });
 
-  // ---------- FIXED Save / Load (with debugging) ----------
+  // ---------- FIXED Save/Load (Browser Storage with Clear Labels) ----------
   const INDEX_KEY = 'zw_sessions_index';
 
   function generateName(){
     const d = new Date();
     const pad = n => String(n).padStart(2,'0');
-    // FIXED: Use .json extension instead of bogus .zw
     return `Project-${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.json`;
   }
   
@@ -511,7 +565,7 @@
   }
   
   function saveCurrentAsNew(){
-    console.log('Save button clicked');
+    console.log('Saving to browser storage...');
     const state = engine.getState();
     const name = generateName();
     try {
@@ -522,8 +576,8 @@
       writeIndex(idx);
       rebuildSessionDropdown();
       if (sessionSelect) sessionSelect.value = name;
-      console.log('Session saved:', name);
-      alert('Session saved: ' + name); // Temporary feedback
+      console.log('Session saved to browser storage:', name);
+      alert(`Session saved to browser storage: ${name}\n\nNote: This saves to your browser only. Use browser export/import for file backup.`);
     } catch(e) {
       console.error('Failed to save session:', e);
       alert('Failed to save session: ' + e.message);
@@ -531,7 +585,7 @@
   }
   
   function loadSelected(){
-    console.log('Load button clicked');
+    console.log('Loading from browser storage...');
     if (!sessionSelect) {
       console.warn('sessionSelect not found');
       return;
@@ -545,22 +599,21 @@
     try {
       const raw = localStorage.getItem(name);
       if (!raw) {
-        alert('Session not found: ' + name);
+        alert('Session not found in browser storage: ' + name);
         return;
       }
       
       const state = JSON.parse(raw);
       engine.setState(state);
       
-      // Move to top of MRU list
       let idx = readIndex().filter(n=>n!==name);
       idx.unshift(name);
       idx = idx.slice(0,10);
       writeIndex(idx);
       rebuildSessionDropdown();
       sessionSelect.value = name;
-      console.log('Session loaded:', name);
-      alert('Session loaded: ' + name); // Temporary feedback
+      console.log('Session loaded from browser storage:', name);
+      alert(`Session loaded: ${name}\n\nLoaded from browser storage.`);
     } catch(e) {
       console.error('Failed to load session:', e);
       alert('Failed to load session: ' + e.message);
@@ -604,21 +657,83 @@
     engine.setStepCount(newCount);
   });
 
-  // FIXED: Make step count clickable and editable
+  // FIXED: Make step count truly inline-editable (no modal)
   if (stepsDisplay) {
-    stepsDisplay.style.cursor = 'pointer';
-    stepsDisplay.addEventListener('click', ()=>{
-      const currentValue = engine.stepCount;
-      const newValue = prompt('Enter step count (1-64):', currentValue);
-      if (newValue !== null) {
-        const parsed = parseInt(newValue, 10);
-        if (!isNaN(parsed) && parsed >= 1 && parsed <= 64) {
-          engine.setStepCount(parsed);
-        } else {
-          alert('Please enter a number between 1 and 64');
+    // Remove any existing click handlers that might trigger modals
+    const newStepsDisplay = stepsDisplay.cloneNode(true);
+    stepsDisplay.parentNode.replaceChild(newStepsDisplay, stepsDisplay);
+    
+    // Apply to the new element
+    const stepsDisplayFixed = $('#stepsDisplay');
+    if (stepsDisplayFixed) {
+      stepsDisplayFixed.style.cursor = 'pointer';
+      stepsDisplayFixed.style.userSelect = 'all';
+      stepsDisplayFixed.contentEditable = true;
+      stepsDisplayFixed.spellcheck = false;
+      
+      stepsDisplayFixed.addEventListener('focus', ()=>{
+        // Select all text when focused
+        setTimeout(()=>{
+          const range = document.createRange();
+          range.selectNodeContents(stepsDisplayFixed);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }, 0);
+      });
+      
+      stepsDisplayFixed.addEventListener('keydown', (e)=>{
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          stepsDisplayFixed.blur();
+          return;
         }
-      }
-    });
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          stepsDisplayFixed.textContent = String(engine.stepCount);
+          stepsDisplayFixed.blur();
+          return;
+        }
+        // Allow only numbers and navigation keys
+        if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+          e.preventDefault();
+        }
+      });
+      
+      stepsDisplayFixed.addEventListener('blur', ()=>{
+        const newValue = parseInt(stepsDisplayFixed.textContent, 10);
+        if (!isNaN(newValue) && newValue >= 1 && newValue <= 64) {
+          engine.setStepCount(newValue);
+        } else {
+          // Restore original value if invalid
+          stepsDisplayFixed.textContent = String(engine.stepCount);
+        }
+      });
+      
+      stepsDisplayFixed.addEventListener('input', ()=>{
+        // Live validation during typing - limit to 2 digits
+        const current = stepsDisplayFixed.textContent.replace(/\D/g, ''); // Remove non-digits
+        if (current !== stepsDisplayFixed.textContent) {
+          stepsDisplayFixed.textContent = current;
+          // Move cursor to end
+          const range = document.createRange();
+          range.selectNodeContents(stepsDisplayFixed);
+          range.collapse(false);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+        if (current.length > 2) {
+          stepsDisplayFixed.textContent = current.slice(0, 2);
+          const range = document.createRange();
+          range.selectNodeContents(stepsDisplayFixed);
+          range.collapse(false);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      });
+    }
   }
 
   // Rate labels with NONE option
