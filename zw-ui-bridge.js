@@ -458,7 +458,7 @@
   timeSignatureSelect && timeSignatureSelect.addEventListener('change',()=>engine.setTimeSignature(timeSignatureSelect.value));
   metronomeBtn && metronomeBtn.addEventListener('click',()=>{ const a=metronomeBtn.classList.toggle('active'); engine.setMetronomeEnabled(a); });
 
-  // ---------- FIXED Save / Load (Proper JSON System) ----------
+  // ---------- FIXED Save / Load (with debugging) ----------
   const INDEX_KEY = 'zw_sessions_index';
 
   function generateName(){
@@ -487,7 +487,10 @@
   }
   
   function rebuildSessionDropdown(){
-    if (!sessionSelect) return;
+    if (!sessionSelect) {
+      console.warn('sessionSelect element not found');
+      return;
+    }
     const index = readIndex();
     sessionSelect.innerHTML = '';
     
@@ -508,27 +511,36 @@
   }
   
   function saveCurrentAsNew(){
+    console.log('Save button clicked');
     const state = engine.getState();
     const name = generateName();
     try {
-      localStorage.setItem(name, JSON.stringify(state, null, 2)); // Pretty print JSON
+      localStorage.setItem(name, JSON.stringify(state, null, 2));
       let idx = readIndex().filter(n=>n!==name);
       idx.unshift(name);
-      idx = idx.slice(0,10); // Keep only 10 most recent
+      idx = idx.slice(0,10);
       writeIndex(idx);
       rebuildSessionDropdown();
       if (sessionSelect) sessionSelect.value = name;
       console.log('Session saved:', name);
+      alert('Session saved: ' + name); // Temporary feedback
     } catch(e) {
       console.error('Failed to save session:', e);
-      alert('Failed to save session. Storage might be full.');
+      alert('Failed to save session: ' + e.message);
     }
   }
   
   function loadSelected(){
-    if (!sessionSelect) return;
+    console.log('Load button clicked');
+    if (!sessionSelect) {
+      console.warn('sessionSelect not found');
+      return;
+    }
     const name = sessionSelect.value;
-    if (!name) return;
+    if (!name) {
+      alert('No session selected');
+      return;
+    }
     
     try {
       const raw = localStorage.getItem(name);
@@ -548,14 +560,39 @@
       rebuildSessionDropdown();
       sessionSelect.value = name;
       console.log('Session loaded:', name);
+      alert('Session loaded: ' + name); // Temporary feedback
     } catch(e) {
       console.error('Failed to load session:', e);
-      alert('Failed to load session. File might be corrupted.');
+      alert('Failed to load session: ' + e.message);
     }
   }
   
-  saveBtn && saveBtn.addEventListener('click', saveCurrentAsNew);
-  loadBtn && loadBtn.addEventListener('click', loadSelected);
+  // Add event listeners with debugging
+  if (saveBtn) {
+    console.log('Save button found, adding listener');
+    saveBtn.addEventListener('click', saveCurrentAsNew);
+  } else {
+    console.warn('Save button (#saveBtn) not found in DOM');
+  }
+  
+  if (loadBtn) {
+    console.log('Load button found, adding listener');
+    loadBtn.addEventListener('click', loadSelected);
+  } else {
+    console.warn('Load button (#loadBtn) not found in DOM');
+  }
+
+  // Add keyboard shortcut as fallback
+  document.addEventListener('keydown', (e)=>{
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      saveCurrentAsNew();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+      e.preventDefault();
+      loadSelected();
+    }
+  });
 
   // ---------- FIXED Sequencer controls ----------
   stepsDown && stepsDown.addEventListener('click',()=>{
