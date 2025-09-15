@@ -1,37 +1,34 @@
-/* ZERO WIDTH – UI Bridge - MINIMAL WORKING VERSION
-   CRITICAL: Get sequencer back first, then add features incrementally
+/* ZERO WIDTH – UI Bridge - SAFE MINIMAL VERSION
+   No $ conflicts, get sequencer working first
 */
 
 (function(){
-  const $=(s,r=document)=>r.querySelector(s);
-  const $=(s,r=document)=>Array.from(r.querySelectorAll(s));
-
-  // Basic DOM elements
-  const stepsRoot=$('#sequencerSteps');
-  const stepsDisplay=$('#stepsDisplay');
-  const playStopBtn=$('#playStopBtn');
-  const seqLocalBtn = $('#seqLocalBtn') || $('#sequencerPlayBtn');
+  // Basic DOM elements - using standard querySelector
+  const stepsRoot = document.querySelector('#sequencerSteps');
+  const stepsDisplay = document.querySelector('#stepsDisplay');
+  const playStopBtn = document.querySelector('#playStopBtn');
+  const seqLocalBtn = document.querySelector('#seqLocalBtn') || document.querySelector('#sequencerPlayBtn');
 
   // Engine
-  const engine=new ZWEngine();
+  const engine = new ZWEngine();
 
   console.log('UI Bridge loading...', {stepsRoot, stepsDisplay, playStopBtn, seqLocalBtn});
 
   // Basic engine callbacks
   engine.setCallbacks({
-    onStatus:(s)=>{
+    onStatus:(s) => {
       console.log('Engine status:', s);
     },
-    onBeat:(beat,down)=>{
+    onBeat:(beat, down) => {
       console.log('Beat:', beat, down);
     },
-    onPulse:()=>{
+    onPulse:() => {
       console.log('Pulse');
     },
-    onStepPlaying:(idx)=>{
+    onStepPlaying:(idx) => {
       console.log('Step playing:', idx);
     },
-    onRender:()=>{
+    onRender:() => {
       console.log('Render requested');
       if (stepsDisplay) {
         stepsDisplay.textContent = String(engine.stepCount);
@@ -41,20 +38,20 @@
   });
 
   // Basic step grid render
-  function renderStepGrid(){
+  function renderStepGrid() {
     console.log('Rendering step grid...');
-    if(!stepsRoot) {
+    if (!stepsRoot) {
       console.error('stepsRoot (#sequencerSteps) not found!');
       return;
     }
     
-    stepsRoot.innerHTML='';
+    stepsRoot.innerHTML = '';
     const steps = engine.steps;
     console.log('Steps to render:', steps.length);
 
-    steps.forEach((s,i)=>{
-      const card=document.createElement('div');
-      card.className='step-card';
+    steps.forEach((s, i) => {
+      const card = document.createElement('div');
+      card.className = 'step-card';
       card.innerHTML = `
         <div class="step-number">${i+1}</div>
         <div class="step-content">
@@ -69,7 +66,7 @@
 
   // Basic transport
   if (playStopBtn) {
-    playStopBtn.addEventListener('click', ()=>{
+    playStopBtn.addEventListener('click', () => {
       console.log('Transport clicked');
       if (engine.isPlaying) {
         engine.stop();
